@@ -13,13 +13,28 @@ To maintain absolute architectural coherence, data contract stability, and safet
 Before proposing or generating any modifications to core architecture or data models, every contributor and AI agent must review:
 
 1. [`README.md`](../README.md) — Mission, safety principle, positioning, and boundaries.
-2. [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) — Ingestion-to-decision pipeline and 11 architectural rules.
-3. [`docs/DATA_CONTRACT.md`](DATA_CONTRACT.md) — Observation and decision JSON schemas.
+2. [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) — Ingestion-to-decision pipeline, architectural invariants, and Scenario Lab rules.
+3. [`docs/DATA_CONTRACT.md`](DATA_CONTRACT.md) — Canonical Observation, Station, Evidence, Decision, and API schemas.
 4. [`docs/DECISION_STATES.md`](DECISION_STATES.md) — The five operational states (`NORMAL`, `WORLD`, `SENSOR`, `BOTH`, `UNKNOWN`) and required actions.
 
 > [!WARNING]
 > **Strict Non-Negotiable**:
-> Contributors and AI assistants **must NOT** silently change or alter the five-state taxonomy (`NORMAL`, `WORLD`, `SENSOR`, `BOTH`, `UNKNOWN`) or modify JSON contract field names without explicit team-wide consensus.
+> Contributors and AI assistants **must NOT** silently change or alter the five-state taxonomy (`NORMAL`, `WORLD`, `SENSOR`, `BOTH`, `UNKNOWN`) or modify canonical contract schema field names without explicit team-wide consensus.
+
+---
+
+## Architectural Invariants (Must Be Upheld by All AI Agents)
+
+1. **Observation ≠ Interpretation**: Raw observations are immutable physical facts; zero diagnosis or state fields permitted in observations.
+2. **Evidence ≠ Decision**: Evidence supports or contradicts a hypothesis; evidence never directly assigns operational state.
+3. **AI ≠ Judge**: AI models provide supporting hypotheses; the deterministic decision engine holds final authority.
+4. **Outlier ≠ Fault**: Extreme measurements can be meteorological events (`WORLD`), sensor faults (`SENSOR`), or both.
+5. **Agreement ≠ Independence**: Corroborating sources must be structurally independent; mere agreement is insufficient.
+6. **Correlation ≠ Independence**: Cross-sensor or spatial correlation does not guarantee independent evidence channels.
+7. **`BOTH` Requires Independent Support**: `BOTH` strictly requires independent evidence corroborating both an environmental event and a sensor issue.
+8. **`UNKNOWN` is Deliberate**: When evidence is missing, conflicting, stale, or non-independent, `UNKNOWN` is the correct safety outcome.
+9. **Dashboard Never Diagnoses**: Dashboard is strictly an observational and presentation layer.
+10. **Scenario Labels Never Enter Decision Logic**: Scenario metadata is validation-only and must never reach runtime decision logic.
 
 ---
 

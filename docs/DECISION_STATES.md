@@ -55,14 +55,16 @@ SKYGUARD classifies every evaluated station observation into one of five mutuall
 - **Definition**: Independent evidence confirms that a significant environmental event is taking place, *and* independent diagnostic evidence confirms that the sensor is simultaneously experiencing a fault or degraded operation (e.g., a lightning surge causing calibration shift during an active storm).
 - **Operational Meaning**: A real weather event is underway, but this specific instrument is misrepresenting the magnitude or failing to capture it accurately.
 - **Default Action**: `Handle event + inspect sensor.` (Escalate meteorological alert while dispatching urgent hardware diagnostics/calibration review).
+- **Critical Invariant**: Assigning `BOTH` strictly requires independent, verified evidence supporting BOTH `WORLD` and `SENSOR`. It cannot be assigned based on conjecture.
 
 ---
 
 ### 5. `UNKNOWN`
 
-- **Definition**: The root cause cannot be established with acceptable confidence because evidence is insufficient, conflicting, stale, missing, or compromised by non-independence.
-- **Operational Meaning**: The system explicitly admits epistemic uncertainty rather than forcing a misleading classification.
+- **Definition**: The root cause cannot be established with acceptable confidence because evidence is insufficient, conflicting, stale, missing, non-independent, or causally ambiguous.
+- **Operational Meaning**: The system explicitly admits epistemic uncertainty rather than forcing an ungrounded classification.
 - **Default Action**: `Human review.` (Route flagged observation to a meteorological data analyst for manual triage and review).
+- **Critical Invariant**: `UNKNOWN` is a deliberate, first-class safety outcome, not a system failure.
 
 ---
 

@@ -10,6 +10,23 @@ SKYGUARD sits between raw sensor ingestion and downstream operational systems, p
 
 ---
 
+## Architectural Invariants
+
+The SKYGUARD architecture is governed by ten fundamental invariants:
+
+1. **Observation ≠ Interpretation**: Observations are immutable raw physical facts. They contain zero diagnosis, scores, or states.
+2. **Evidence ≠ Decision**: Evidence supports or contradicts a hypothesis. It never independently sets an operational state.
+3. **AI ≠ Judge**: AI/ML models act as investigators producing supporting evidence; the deterministic decision engine retains final authority.
+4. **Outlier ≠ Fault**: An unusual reading may be an environmental extreme (`WORLD`), a malfunction (`SENSOR`), or both.
+5. **Agreement ≠ Independence**: Corroborating sources must be structurally independent; mere agreement is insufficient.
+6. **Correlation ≠ Independence**: Spatial or cross-sensor correlation does not establish independent evidence channels.
+7. **`BOTH` Requires Independent Support**: Assigning `BOTH` strictly requires independent evidence corroborating both an environmental event and a sensor issue.
+8. **`UNKNOWN` is Deliberate**: When evidence is missing, conflicting, stale, or non-independent, `UNKNOWN` is the deliberate, safe outcome.
+9. **Dashboard Never Diagnoses**: The dashboard is strictly an observational and presentation layer; it computes zero diagnostic logic.
+10. **Scenario Labels Never Enter Decision Logic**: Ground-truth scenario labels are strictly offline validation metadata and never reach runtime decision logic.
+
+---
+
 ## Conceptual Pipeline
 
 ```text
@@ -41,15 +58,15 @@ Action + Explanation
 ## Pipeline Stages
 
 1. **Ingestion Layer (AWS / Simulator / Edge)**
-   - Ingests high-frequency environmental telemetry (`temperature`, `humidity`, `pressure`, timestamps, station identifiers).
-   - Ingestion sources can be physical hardware testbeds (ESP32 + BME280), simulated AWS networks, or historical records.
+   - Ingests canonical observation payloads (`observation_id`, `station_id`, `observed_at`, `received_at`, `measurements`, `source`, `sequence`).
+   - Ingestion sources can be physical hardware testbeds (ESP32 + BME280), simulated AWS networks, or meteorological telemetry feeds.
 
 2. **Data Quality & Physical Validation**
    - Applies deterministic physical limit checks (e.g., climatological limits, rate-of-change thresholds, sensor operating bounds).
    - Flags immediately impossible values (e.g., negative Kelvin, 120% relative humidity, sudden 50°C jumps in 1 second).
 
 3. **Deterministic Checks**
-   - Evaluates basic consistency without requiring ML or complex heuristics.
+   - Evaluates basic physical and temporal consistency without requiring ML or complex heuristics.
    - Ensures the safety baseline is preserved even if higher-level intelligence components degrade.
 
 4. **Evidence Collection (World vs. Sensor)**
@@ -57,10 +74,10 @@ Action + Explanation
    - **Sensor Evidence**: Electrical noise signatures, stuck-value counters, drift against co-located/adjacent baselines, packet drop rates, calibration anomalies.
 
 5. **Evidence Quality Evaluation**
-   - Before fusing any evidence, its quality is scored based on latency, freshness, noise levels, and spatial proximity. Stale or degraded evidence is flagged or down-weighted.
+   - Before fusing any evidence, its quality is scored based on latency, freshness, completeness, and spatial proximity. Stale or degraded evidence is flagged or down-weighted.
 
 6. **Provenance Tracking**
-   - Every piece of evidence maintains strict provenance: origin source, timestamp, computation method, and processing pipeline version.
+   - Every piece of evidence maintains strict provenance: origin source, timestamp, computation method, and source observation IDs.
 
 7. **Independence Gate**
    - Checks whether supporting sources are truly independent.
@@ -77,16 +94,31 @@ Action + Explanation
 
 ---
 
-## Core Architectural Rules
+## Scenario Lab & Injection Architecture
 
-1. **Dashboard never diagnoses**: The frontend dashboard is strictly an observational and presentation layer. It must NEVER invent, compute, or independently determine a diagnostic state.
-2. **Deterministic checks handle clearly invalid observations**: Base physical bounds and gross corruption are caught deterministically prior to evidence synthesis.
-3. **Evidence must have provenance**: No observation, hypothesis, or feature may participate in decision-making without a traceable origin, timestamp, and method signature.
-4. **Evidence quality must be evaluated before evidence fusion**: Corrupted, stale, or low-resolution signals must not be weighted equally with high-confidence observations.
-5. **Correlated sources cannot automatically be treated as independent**: Spatial proximity alone does not guarantee independence (e.g., shared telemetry gateways or identical calibration drift batches).
-6. **`BOTH` requires independent support for both world and sensor causes**: The system will not emit `BOTH` unless clear, separate, and verified evidence exists for both an environmental event and a sensor malfunction.
-7. **`UNKNOWN` is a deliberate safety outcome**: When evidence is incomplete, conflicting, stale, or non-independent, `UNKNOWN` is the correct, safe output. It is not an unhandled exception or system failure.
-8. **Causal ambiguity is allowed**: When signals do not clearly distinguish environmental dynamics from instrument faults, the engine explicitly acknowledges ambiguity rather than guessing.
-9. **Scenario injection must modify observations/evidence through the same pipeline**: Simulated faults or weather events must pass through standard ingestion and verification channels; no bypassing allowed.
-10. **Scenario labels must NEVER directly set the final decision state**: Injected ground-truth metadata is used strictly for offline validation/benchmarking and must never leak into the runtime decision engine.
-11. **AI produces supporting evidence/hypotheses, not authoritative final states**: AI/ML models act as investigative tools (e.g., finding subtle spatio-temporal anomalies or pattern hypotheses). The deterministic decision engine retains final authority.
+The Scenario Lab provides controlled synthetic meteorological dynamics and sensor fault injection to validate the decision engine.
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                        SCENARIO LAB                         │
+│                                                             │
+│   [Scenario Generator] ──(Injects synthetic observations)   │
+│            │                                                │
+│            ▼                                                │
+│      POST /ingest                                           │
+│            │                                                │
+│            ▼                                                │
+│  [Standard Ingestion Pipeline]                              │
+│            │                                                │
+│            ▼                                                │
+│  [Deterministic Decision Engine]                            │
+│            │                                                │
+│            ▼                                                │
+│  [Decision Output] ◄── [Ground Truth Evaluator (Offline)]   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Scenario Rules:
+- Scenario injection modifies observations through the standard ingestion pipeline.
+- Scenario ground-truth labels are stored in the validation harness only.
+- The decision engine never has access to scenario metadata.

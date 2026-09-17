@@ -5,7 +5,7 @@
 [![SIH 2026](https://img.shields.io/badge/SIH%202026-Problem%20SIH26073-blue.svg)](https://www.sih.gov.in/)
 [![Theme](https://img.shields.io/badge/Theme-Disaster%20Management-orange.svg)](#)
 [![Ministry](https://img.shields.io/badge/Organization-MoES%20%2F%20IMD-green.svg)](#)
-[![Status](https://img.shields.io/badge/Status-M0%20Foundation%20%26%20Architecture%20Frozen-lightgrey.svg)](docs/BUILD_PLAN.md)
+[![Status](https://img.shields.io/badge/Status-M1--A%20Contract%20Freeze-lightgrey.svg)](docs/BUILD_PLAN.md)
 
 ---
 
@@ -89,7 +89,7 @@ SKYGUARD-SIH2026/
 └── README.md         # Root project overview
 ```
 
-For complete architectural details, see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+For complete architectural details, see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`docs/DATA_CONTRACT.md`](docs/DATA_CONTRACT.md).
 
 ---
 
@@ -106,5 +106,11 @@ In Team Axiom Forge, we prioritize engineering rigor, explainability, and episte
 
 ## 📊 Current Project Status
 
-- **Current Milestone**: **M0 — Repository Foundation & Architectural Freeze**
-- **Next Phase**: M1 — Virtual AWS Network & Deterministic QC Implementation (see [`docs/BUILD_PLAN.md`](docs/BUILD_PLAN.md)).
+- **M0 — Repository Foundation**: `COMPLETE`
+- **M1-A — Contract Freeze**: `COMPLETE AFTER REVIEW`
+- **M1-B — Virtual AWS Network**: `NOT STARTED`
+- **M1-C — Decision Engine**: `NOT STARTED`
+- **M2 — Command-Center Dashboard**: `NOT STARTED`
+- **M3 — Physical ESP32 + BME280 Edge Testbed**: `NOT STARTED`
+- **M4 — ML Supporting Evidence**: `NOT STARTED`
+- **M5 — Demo Hardening**: `NOT STARTED`
