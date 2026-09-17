@@ -1,4 +1,7 @@
-"""SKYGUARD Backend Package.
-
-Decision engine, deterministic QC checks, evidence fusion, and API layer.
 """
+SKYGUARD Backend Package
+"""
+
+from backend.main import app
+
+__all__ = ["app"]

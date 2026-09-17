@@ -1,4 +1,7 @@
-"""SKYGUARD Simulator Package.
-
-Synthetic AWS network generation, meteorological dynamics, and scenario fault injection.
 """
+SKYGUARD Simulator Package
+"""
+
+from simulator.generator import execute_scenario
+
+__all__ = ["execute_scenario"]
