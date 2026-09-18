@@ -10,6 +10,11 @@ from backend.engine.quality import (
     QualityConfig,
     QualityResult,
 )
+from backend.engine.sensor import (
+    SensorConfig,
+    SensorEvidenceEngine,
+    SensorEvidenceResult,
+)
 from backend.engine.world import (
     ExternalWorldEvidence,
     NeighborCoherenceDetail,
@@ -23,6 +28,9 @@ __all__ = [
     "QualityCheckDetail",
     "QualityResult",
     "DataQualityChecker",
+    "SensorConfig",
+    "SensorEvidenceEngine",
+    "SensorEvidenceResult",
     "ExternalWorldEvidence",
     "NeighborCoherenceDetail",
     "WorldConfig",
